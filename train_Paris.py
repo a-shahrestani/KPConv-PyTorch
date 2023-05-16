@@ -7,7 +7,7 @@
 #
 # ----------------------------------------------------------------------------------------------------------------------
 #
-#      Callable script to start a training on S3DIS dataset
+#      Callable script to start a training on Paris dataset
 #
 # ----------------------------------------------------------------------------------------------------------------------
 #
@@ -26,7 +26,7 @@ import signal
 import os
 
 # Dataset
-from datasets.S3DIS import *
+from datasets.Paris import *
 from torch.utils.data import DataLoader
 
 from utils.config import Config
@@ -40,7 +40,7 @@ from models.architectures import KPFCNN
 #       \******************/
 #
 
-class S3DISConfig(Config):
+class ParisConfig(Config):
     """
     Override the parameters you want to modify for this dataset
     """
@@ -50,7 +50,7 @@ class S3DISConfig(Config):
     ####################
 
     # Dataset name
-    dataset = 'S3DIS'
+    dataset = 'Paris'
 
     # Number of classes in the dataset (This value is overwritten by dataset class when Initializating dataset).
     num_classes = None
@@ -143,7 +143,7 @@ class S3DISConfig(Config):
 
     # Choice of input features
     first_features_dim = 128
-    in_features_dim = 5
+    in_features_dim = 1
 
     # Can the network learn modulations
     modulated = False
@@ -165,7 +165,7 @@ class S3DISConfig(Config):
     #####################
 
     # Maximal number of epochs
-    max_epoch = 2
+    max_epoch = 100
 
     # Learning rate management
     learning_rate = 1e-2
@@ -177,7 +177,7 @@ class S3DISConfig(Config):
     batch_num = 6
 
     # Number of steps per epochs
-    epoch_steps = 10
+    epoch_steps = 1000
 
     # Number of validation examples per epoch
     validation_size = 50
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     print('****************')
 
     # Initialize configuration class
-    config = S3DISConfig()
+    config = ParisConfig()
     if previous_training_path:
         config.load(os.path.join('results', previous_training_path))
         config.saving_path = None
@@ -268,24 +268,24 @@ if __name__ == '__main__':
         config.saving_path = sys.argv[1]
 
     # Initialize datasets
-    training_dataset = S3DISDataset(config, set='training', use_potentials=True)
-    test_dataset = S3DISDataset(config, set='validation', use_potentials=True)
+    training_dataset = ParisDataset(config, set='training', use_potentials=True)
+    test_dataset = ParisDataset(config, set='validation', use_potentials=True)
 
     # Initialize samplers
-    training_sampler = S3DISSampler(training_dataset)
-    test_sampler = S3DISSampler(test_dataset)
+    training_sampler = ParisSampler(training_dataset)
+    test_sampler = ParisSampler(test_dataset)
 
     # Initialize the dataloader
     training_loader = DataLoader(training_dataset,
                                  batch_size=1,
                                  sampler=training_sampler,
-                                 collate_fn=S3DISCollate,
+                                 collate_fn=ParisCollate,
                                  num_workers=config.input_threads,
                                  pin_memory=True)
     test_loader = DataLoader(test_dataset,
                              batch_size=1,
                              sampler=test_sampler,
-                             collate_fn=S3DISCollate,
+                             collate_fn=ParisCollate,
                              num_workers=config.input_threads,
                              pin_memory=True)
 

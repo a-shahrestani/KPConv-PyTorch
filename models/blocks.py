@@ -692,3 +692,10 @@ class MaxPoolBlock(nn.Module):
     def forward(self, x, batch):
         return max_pool(x, batch.pools[self.layer_ind + 1])
 
+class ScoreRefinedAttentionBlock(nn.Module):
+    def __init__(self, layer_ind):
+        super(ScoreRefinedAttentionBlock, self).__init__()
+        pass
+
+    def forward(self, x, batch):
+        pass

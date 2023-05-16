@@ -192,6 +192,7 @@ class KPFCNN(nn.Module):
     """
 
     def __init__(self, config, lbl_values, ign_lbls):
+
         super(KPFCNN, self).__init__()
 
         ############
@@ -340,6 +341,12 @@ class KPFCNN(nn.Module):
         x = self.head_mlp(x, batch)
         x = self.head_softmax(x, batch)
 
+        # For testing the value of max pooling
+        # k = x.clone().detach()
+        # k = torch.cat((k, torch.zeros_like(k[:1, :])), 0)
+
+        # Max pooled value for the last layer representing a sort of weight
+        t = max_pool(x, batch.neighbors[0])
         return x
 
     def loss(self, outputs, labels):
@@ -358,7 +365,7 @@ class KPFCNN(nn.Module):
         # Reshape to have a minibatch size of 1
         outputs = torch.transpose(outputs, 0, 1)
         outputs = outputs.unsqueeze(0)
-        target = target.unsqueeze(0)
+        target = target.unsqueeze(0).long()
 
         # Cross entropy loss
         self.output_loss = self.criterion(outputs, target)

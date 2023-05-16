@@ -110,7 +110,7 @@ class ModelNet40Dataset(PointCloudDataset):
         self.ignored_labels = np.array([])
 
         # Dataset folder
-        self.path = '../../Data/ModelNet40'
+        self.path = '../datasets/ModelNet40'
 
         # Type of task conducted on this dataset
         self.dataset_task = 'classification'

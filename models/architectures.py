@@ -296,7 +296,7 @@ class KPFCNN(nn.Module):
 
         self.head_mlp = UnaryBlock(out_dim, config.first_features_dim, False, 0)
         self.head_softmax = UnaryBlock(config.first_features_dim, self.C, False, 0, no_relu=True)
-
+        self.point_weight = UnaryBlock(self.C, 1, False, 0, no_relu=True, no_sigmoid=False)
         ################
         # Network Losses
         ################
@@ -341,13 +341,24 @@ class KPFCNN(nn.Module):
         x = self.head_mlp(x, batch)
         x = self.head_softmax(x, batch)
 
+        # ...................................................................
         # For testing the value of max pooling
         # k = x.clone().detach()
         # k = torch.cat((k, torch.zeros_like(k[:1, :])), 0)
+        # ...................................................................
+
 
         # Max pooled value for the last layer representing a sort of weight
-        t = max_pool(x, batch.neighbors[0])
-        return x
+        neighborhood_score = max_pool(x, batch.neighbors[0])
+
+        # point weight calculation
+        point_weights = self.point_weight(x, batch)
+        point_weights_mask = point_weights.expand(-1, x.shape[1])
+        point_weights_minus_mask = 1 - point_weights_mask
+
+        # Attention Score
+        attention_score = neighborhood_score * point_weights_minus_mask +  point_weights_mask * x
+        return attention_score
 
     def loss(self, outputs, labels):
         """

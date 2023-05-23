@@ -604,7 +604,7 @@ class ModelTrainer:
 
         # Save predicted cloud occasionally
         # if config.saving and (self.epoch + 1) % config.checkpoint_gap == 0:
-        if config.saving:
+        if config.saving and self.epoch + 1 % 10 == 0:
             val_path = join(config.saving_path, 'val_preds_{:d}'.format(self.epoch + 1))
             if not exists(val_path):
                 makedirs(val_path)

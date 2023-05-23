@@ -100,10 +100,10 @@ def max_pool(x, inds):
     """
 
     # Add a last row with minimum features for shadow pools
-    x = torch.cat((x, torch.zeros_like(x[:1, :])), 0)
+    new_x = torch.cat((x, torch.zeros_like(x[:1, :])), 0)
 
     # Get all features for each pooling location [n2, max_num, d]
-    pool_features = gather(x, inds)
+    pool_features = gather(new_x, inds)
 
     # Pool the maximum [n2, d]
     max_features, _ = torch.max(pool_features, 1)
@@ -468,7 +468,7 @@ class BatchNormBlock(nn.Module):
 
 class UnaryBlock(nn.Module):
 
-    def __init__(self, in_dim, out_dim, use_bn, bn_momentum, no_relu=False):
+    def __init__(self, in_dim, out_dim, use_bn, bn_momentum, no_relu=False, no_sigmoid = True):
         """
         Initialize a standard unary block with its ReLU and BatchNorm.
         :param in_dim: dimension input features
@@ -481,12 +481,15 @@ class UnaryBlock(nn.Module):
         self.bn_momentum = bn_momentum
         self.use_bn = use_bn
         self.no_relu = no_relu
+        self.no_sigmoid = no_sigmoid
         self.in_dim = in_dim
         self.out_dim = out_dim
         self.mlp = nn.Linear(in_dim, out_dim, bias=False)
         self.batch_norm = BatchNormBlock(out_dim, self.use_bn, self.bn_momentum)
         if not no_relu:
             self.leaky_relu = nn.LeakyReLU(0.1)
+        elif not no_sigmoid:
+            self.sigmoid = nn.Sigmoid()
         return
 
     def forward(self, x, batch=None):
@@ -494,6 +497,8 @@ class UnaryBlock(nn.Module):
         x = self.batch_norm(x)
         if not self.no_relu:
             x = self.leaky_relu(x)
+        elif not self.no_sigmoid:
+            x = self.sigmoid(x)
         return x
 
     def __repr__(self):

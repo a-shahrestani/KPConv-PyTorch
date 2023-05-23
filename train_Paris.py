@@ -177,7 +177,7 @@ class ParisConfig(Config):
     batch_num = 6
 
     # Number of steps per epochs
-    epoch_steps = 1000
+    epoch_steps = 2000
 
     # Number of validation examples per epoch
     validation_size = 50
@@ -229,6 +229,7 @@ if __name__ == '__main__':
 
     # Choose here if you want to start training from a previous snapshot (None for new training)
     # previous_training_path = 'Log_2020-03-19_19-53-27'
+    # previous_training_path = 'Log_2023-05-19_18-03-37'
     previous_training_path = ''
 
     # Choose index of checkpoint to start from. If None, uses the latest chkp

@@ -297,7 +297,6 @@ class KPFCNN(nn.Module):
         self.head_mlp = UnaryBlock(out_dim, config.first_features_dim, False, 0)
         self.head_softmax = UnaryBlock(config.first_features_dim, self.C, False, 0, no_relu=True)
         self.point_weight = UnaryBlock(self.C, 1, False, 0, no_relu=True, no_sigmoid=False)
-        self.log_softmax = nn.LogSoftmax(dim=1)
         ################
         # Network Losses
         ################
@@ -306,12 +305,11 @@ class KPFCNN(nn.Module):
         self.valid_labels = np.sort([c for c in lbl_values if c not in ign_lbls])
 
         # Choose segmentation loss
-        # Changed CrossEntropyLoss to NLLLoss to match the output of the network. The output is log_softmax now
         if len(config.class_w) > 0:
             class_w = torch.from_numpy(np.array(config.class_w, dtype=np.float32))
-            self.criterion = torch.nn.NLLLoss(weight=class_w, ignore_index=-1)
+            self.criterion = torch.nn.CrossEntropyLoss(weight=class_w, ignore_index=-1)
         else:
-            self.criterion = torch.nn.NLLLoss(ignore_index=-1)
+            self.criterion = torch.nn.CrossEntropyLoss(ignore_index=-1)
         self.deform_fitting_mode = config.deform_fitting_mode
         self.deform_fitting_power = config.deform_fitting_power
         self.deform_lr_factor = config.deform_lr_factor
@@ -342,7 +340,6 @@ class KPFCNN(nn.Module):
         # Head of network
         x = self.head_mlp(x, batch)
         x = self.head_softmax(x, batch)
-        x = self.log_softmax(x)
 
         # ...................................................................
         # For testing the value of max pooling
@@ -361,7 +358,7 @@ class KPFCNN(nn.Module):
 
         # Attention Score
         attention_score = (neighborhood_score * point_weights_minus_mask) +  (point_weights_mask * x)
-        return attention_score
+        return x
 
     def loss(self, outputs, labels):
         """

@@ -108,8 +108,7 @@ class ParisDataset(PointCloudDataset):
 
         # Proportion of validation scenes
         self.cloud_names = ['Paris','Lille1_1','Lille1_2']
-        # self.validation_files = ['Miette - Cloud']
-        self.validation_files = ['Lille2']
+        self.validation_files = ['Paris']
         self.validation_split = 1
         self.all_splits = [1]
 
@@ -739,8 +738,9 @@ class ParisDataset(PointCloudDataset):
                 # read ply with data
                 data = read_ply(sub_ply_file)
                 sub_intensity = data['reflectance'].reshape(-1,1)
+                # sub_intensity = data['scalar_Intensity'].reshape(-1, 1)
+                # sub_labels = data['scalar_Classification'].astype(int)
                 sub_labels = data['class']
-
                 # Read pkl with search tree
                 with open(KDTree_file, 'rb') as f:
                     search_tree = pickle.load(f)
@@ -750,12 +750,11 @@ class ParisDataset(PointCloudDataset):
 
                 # Read ply file
                 data = read_ply(file_path)
-                points = np.vstack((data['x'], data['y'], data['z'])).T.astype(np.float32)
-                # intensity = data['scalar_Intensity'].reshape(-1,1).astype(np.float32)
-                # labels = data['scalar_Classification'].astype(np.uint8)
-                intensity = data['reflection'].reshape(-1, 1).astype(np.float32)
-                labels = data['class'].astype(np.uint8)
-
+                points = np.vstack((data['x'], data['y'], data['z'])).T
+                intensity = data['reflectance'].reshape(-1,1)
+                # intensity = data['scalar_Intensity'].reshape(-1, 1)
+                # labels = data['scalar_Classification'].astype(int)
+                labels = data['class']
                 # Subsample cloud
                 sub_points, sub_intensity, sub_labels = grid_subsampling(points,
                                                                       features=intensity,
@@ -777,7 +776,9 @@ class ParisDataset(PointCloudDataset):
                 # Save ply
                 write_ply(sub_ply_file,
                           [sub_points, sub_intensity, sub_labels],
-                          ['x', 'y', 'z', 'reflectance', 'class'])
+                          # ['x', 'y', 'z', 'reflectance', 'class'],
+                          ['x', 'y', 'z', 'scalar_Intensity', 'scalar_Classification'],
+                          )
 
             # Fill data containers
             self.input_trees += [search_tree]

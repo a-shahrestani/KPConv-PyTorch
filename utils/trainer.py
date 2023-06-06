@@ -310,7 +310,9 @@ class ModelTrainer:
 
         # Number of classes predicted by the model
         nc_model = config.num_classes
-        softmax = torch.nn.Softmax(1)
+        # Removing softmax from the code
+        softmax = lambda x: x
+        # softmax = torch.nn.Softmax(1)
 
         # Initialize global prediction over all models
         if not hasattr(self, 'val_probs'):
@@ -426,7 +428,9 @@ class ModelTrainer:
 
         # Choose validation smoothing parameter (0 for no smothing, 0.99 for big smoothing)
         val_smooth = 0.95
-        softmax = torch.nn.Softmax(1)
+        # Removing softmax from the code
+        softmax = lambda x: x
+        # softmax = torch.nn.Softmax(1)
 
         # Do not validate if dataset has no validation cloud
         if val_loader.dataset.validation_split not in val_loader.dataset.all_splits:
@@ -603,8 +607,8 @@ class ModelTrainer:
         print('{:s} mean IoU = {:.1f}%'.format(config.dataset, mIoU))
 
         # Save predicted cloud occasionally
-        # if config.saving and (self.epoch + 1) % config.checkpoint_gap == 0:
-        if config.saving and self.epoch + 1 % 10 == 0:
+        if config.saving and (self.epoch + 1) % config.checkpoint_gap == 0:
+        # if config.saving:
             val_path = join(config.saving_path, 'val_preds_{:d}'.format(self.epoch + 1))
             if not exists(val_path):
                 makedirs(val_path)
@@ -671,7 +675,10 @@ class ModelTrainer:
 
         # Choose validation smoothing parameter (0 for no smothing, 0.99 for big smoothing)
         val_smooth = 0.95
-        softmax = torch.nn.Softmax(1)
+
+        # Removing softmax from the code
+        softmax = lambda x: x
+        # softmax = torch.nn.Softmax(1)
 
         # Create folder for validation predictions
         if not exists (join(config.saving_path, 'val_preds')):

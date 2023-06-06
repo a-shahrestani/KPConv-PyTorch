@@ -181,9 +181,9 @@ class Config:
     validation_size = 100
 
     # Number of epoch between each checkpoint
-    checkpoint_gap = 50
+    checkpoint_gap = 10
 
-    # Do we nee to save convergence
+    # Do we need to save convergence
     saving = True
     saving_path = None
 

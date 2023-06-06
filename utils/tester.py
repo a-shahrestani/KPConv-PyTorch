@@ -88,7 +88,9 @@ class ModelTester:
         ############
 
         # Choose test smoothing parameter (0 for no smothing, 0.99 for big smoothing)
-        softmax = torch.nn.Softmax(1)
+        # Removing softmax from the code
+        softmax = lambda x: x
+        # softmax = torch.nn.Softmax(1)
 
         # Number of classes including ignored labels
         nc_tot = test_loader.dataset.num_classes
@@ -185,7 +187,10 @@ class ModelTester:
         # Choose test smoothing parameter (0 for no smothing, 0.99 for big smoothing)
         test_smooth = 0.95
         test_radius_ratio = 0.7
-        softmax = torch.nn.Softmax(1)
+
+        # Removing softmax from the code
+        softmax = lambda x: x
+        # softmax = torch.nn.Softmax(1)
 
         # Number of classes including ignored labels
         nc_tot = test_loader.dataset.num_classes
@@ -475,7 +480,9 @@ class ModelTester:
         # Choose validation smoothing parameter (0 for no smothing, 0.99 for big smoothing)
         test_smooth = 0.5
         last_min = -0.5
-        softmax = torch.nn.Softmax(1)
+        # Removing softmax from the code
+        softmax = lambda x: x
+        # softmax = torch.nn.Softmax(1)
 
         # Number of classes including ignored labels
         nc_tot = test_loader.dataset.num_classes

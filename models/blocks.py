@@ -102,7 +102,7 @@ def max_pool(x, inds):
     # Add a last row with minimum features for shadow pools
     new_x = torch.cat((x, torch.zeros_like(x[:1, :])), 0)
 
-    # Get all features for each pooling location [n2, max_num, d]
+    # Get all features for each pooling location [n2, max_nux[m, d]
     pool_features = gather(new_x, inds)
 
     # Pool the maximum [n2, d]
